@@ -1,6 +1,7 @@
 use crate::sessions::{PasswordSession, Session};
 
 use super::*;
+use sessions::AuthorizationArea1;
 use tpm2_rs_base::constants::TPM2Handle;
 use tpm2_rs_base::errors::TpmRcError;
 use tpm2_rs_base::TpmaSession;
@@ -181,9 +182,7 @@ fn test_response_missing_sessions() {
     fake_tpm.add_to_response(&TPM2Handle(77));
 
     let cmd = TestHandlesCommand();
-    let mut sessions = CmdSessions::default();
-    let mut session = PasswordSession::default();
-    sessions.push(&mut session);
+    let sessions = AuthorizationArea1::new(PasswordSession::default());
     assert_eq!(
         run_command_with_handles(&cmd, TPM2Handle::RSPW, sessions, &mut fake_tpm),
         Err(TpmRcError::Memory.into())
@@ -204,9 +203,7 @@ fn test_response_session_fails_validation() {
     fake_tpm.add_to_response(&invalid_auth);
 
     let cmd = TestHandlesCommand();
-    let mut sessions = CmdSessions::default();
-    let mut session = PasswordSession::default();
-    sessions.push(&mut session);
+    let sessions = AuthorizationArea1::new(PasswordSession::default());
     assert_eq!(
         run_command_with_handles(&cmd, TPM2Handle::RSPW, sessions, &mut fake_tpm),
         Err(validation_failure.err().unwrap())
