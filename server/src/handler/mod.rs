@@ -1,7 +1,8 @@
 use crate::{
-    platform::{CryptoRandom, TpmBuffers, TpmContextDeps},
+    platform::{TpmBuffers, TpmContextDeps},
     req_resp::RequestThenResponse,
 };
+use rand_core::RngCore;
 use tpm2_rs_base::errors::TpmRcError;
 
 /// The context that all command handler functions are given access to in order for them to process
@@ -27,7 +28,7 @@ impl<Deps: TpmContextDeps> CommandHandler<Deps> {
         let mut response = request.into_response();
         response
             .write_callback(requested_bytes, |buffer| {
-                self.crypto.get_random_bytes(buffer)
+                self.crypto.fill_bytes(buffer)
             })
             .map_err(|_| TpmRcError::Memory)?;
 

@@ -5,4 +5,5 @@ edition = "2021"
 
 [dependencies]
 hex-literal = { workspace = true }
+rand_core = { workspace = true }
 tpm2-rs-base = { workspace = true }
